@@ -99,27 +99,22 @@ export default class MusicAPI {
    * Get related media of a song given an id.
    */
   static getSongMedia = (id) => {
-    let requestUrl = BASE_URL + "/songs/" + id + "/media?n=4";
+    let requestUrl = BASE_URL + "/songs/" + id + "/media?n=4"
 
     return axios.get(requestUrl)
     .then(function(response) {
       let result = response.data.data;
       let media = [];
 
-      result.forEach(mediaObj => {
+      result.forEach(mediaObj) => {
         media.push(new MediaItem(mediaObj.url, mediaObj.caption, 
           mediaObj.thumbnail));
-      
-      
       });
       
-        
-      
-
       return media;
     })
-
     .catch(function (error) {
         MusicAPI.handleError(error);
       });
     }
+}
