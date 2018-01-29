@@ -39,10 +39,6 @@ export default class HomePage extends React.Component {
     }.bind(this));
   };
 
- 
-
-
-
   /**
    * Handles change in date text box
    */

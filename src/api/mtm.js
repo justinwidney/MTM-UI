@@ -25,19 +25,20 @@ export default class MusicAPI {
 
   /**
    * Get songs in the billboard chart in a given date
+   * encodeURIComponent(sparqlQuery)
    */
   static getChart = (date) => {
 
-    let requestUrl = BASE_URL + "/charts/" + date;
-
-    return axios.get(requestUrl)
+    let BILLBOARD_URL = "http://localhost:9006/billboard/charts/" + date + "?filter=song";
+    
+    return axios.get(BILLBOARD_URL)
       .then(function (res) {
 
-        let result = res.data.data;
+        let result = res.data;
         let chart = [];
 
         result.forEach((chartItem) => {
-          chart.push(new ChartPosition(chartItem.rank, chartItem.songId, chartItem['song.name'], chartItem['song.artist']));
+          chart.push(new ChartPosition(chartItem['rank'], chartItem['song_id'], chartItem['song_name'], chartItem['display_artist']));
         });
 
         return chart;
@@ -51,26 +52,23 @@ export default class MusicAPI {
    * Get song information given an id
    */
   static getSongInfo = (id) => {
-
     let requestUrl = BASE_URL + "/songs/" + id;
 
-
     return axios.get(requestUrl)
-    .then(function(response){
-      let result = response.data.data;
+      .then(function (response) {
 
-      let song = new Song(id, result.name, result.artist, result.albumname, result.albumRelease, result.duration, result.url, result.image);
+        let result = response.data.data;
 
-      return song;
+        let song = new Song(id, result.name, result.artist,
+                    result.albumName, result.albumRelease, result.duration,
+                    result.url, result.image);
 
-    })
-    .catch(function(error){
-      MusicAPI.handleError(erorr);
-    });
+        return song;
 
-
-
-   
+      })
+      .catch(function (error) {
+        MusicAPI.handleError(error);
+      });
   }
 
   /**
@@ -102,24 +100,19 @@ export default class MusicAPI {
     let requestUrl = BASE_URL + "/songs/" + id + "/media?n=4";
 
     return axios.get(requestUrl)
-    .then(function(response) {
-      let result = response.data.data;
-      let media = [];
+      .then(function (res) {
 
-      result.forEach(mediaObj => {
-        media.push(new MediaItem(mediaObj.url, mediaObj.caption, 
-          mediaObj.thumbnail));
-      
-      
-      });
-      
-        
-      
+        let result = res.data.data;
+        let media = [];
 
-      return media;
-    })
+        result.forEach((mediaObject) => {
+          media.push(new MediaItem(mediaObject.url, mediaObject.caption, mediaObject.thumbnail));
+        });
 
-    .catch(function (error) {
+        return media;
+      })
+      .catch(function (error) {
         MusicAPI.handleError(error);
       });
-    }
+  }
+}
